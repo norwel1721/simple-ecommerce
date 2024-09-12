@@ -1,0 +1,38 @@
+.custom-card-design{
+    background-color: aliceblue;
+    transition: filter  0.5s ease-in-out;
+    padding: 8px;
+    position: relative;
+    border-radius: 4px;
+    height: 100%;
+    cursor: pointer;
+}
+.card-image {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+.card-image img{
+    transition: width  0.5s ease-in-out;
+}
+.card-details{
+    position: relative;
+    transition: bottom 0.5s ease-in-out;
+    overflow: hidden;
+    /* height: 20%; */
+    background-color: white;
+    bottom: 0px;
+    left: 0;
+}
+.custom-card-design:hover .card-image img{
+    width: 110%;
+}
+.custom-card-design:hover .card-details{
+    bottom: 20px;
+}
+.custom-card-design:hover{
+    filter: drop-shadow(4px 4px 5px rgba(0, 0, 0, 0.808));
+}
