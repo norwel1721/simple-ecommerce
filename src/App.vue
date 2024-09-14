@@ -18,24 +18,18 @@
     <v-navigation-drawer v-model="drawer">
       <v-list-item title="My Application" subtitle="Vuetify"></v-list-item>
       <v-divider></v-divider>
-      <v-list-item link title="List Item 1"></v-list-item>
-      <v-list-item link title="List Item 2"></v-list-item>
-      <v-list-item link title="List Item 3"></v-list-item>
+      <div class="pa-2">
+        <v-text-field>
+        </v-text-field>
+      </div>
     </v-navigation-drawer>
 
     <transition name="slide-up" mode="out-in">
-      <v-main v-if="main" style="min-width:100vh!important;">
+      <v-main v-if="main" style="min-height:100vh!important;">
         <Product />
       </v-main>
     </transition>
-    <transition name="slide-up" mode="out-in">
-      <div v-if="openShopButton" class="position-relative h-100 w-100 bg-primary landing-page">
-        <v-sheet color="#eff2f345" class="pa-2 " max-width="500px" rounded>
-          Discover unique products, curated just for you
-          <v-btn class="ml-2" @click="openShop()">Shop Now!</v-btn>
-        </v-sheet>
-      </div>
-    </transition>
+
   </v-app>
 </template>
 
@@ -84,7 +78,7 @@ const resetInactivityTimeout = () => {
     if (inactivityTimeout) {
         clearTimeout(inactivityTimeout);
     }
-      inactivityTimeout = setTimeout(clearShopState, 300000);
+      inactivityTimeout = setTimeout(clearShopState, 3000000);
     
 };
 

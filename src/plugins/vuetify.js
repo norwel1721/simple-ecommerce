@@ -53,38 +53,13 @@ const vuetify = createVuetify({
     defaults: {
         VContainer:{
         },
-
         global:{
-            transition:"slide-x-transition"
+            
         },
-        VCard: {
-            elevation:5,
-            VTextField: { 
-                variant:'underlined',
-                density:'compact'
-            },
-            VTextarea: { 
-                variant:'underlined',
-                density:'compact'
-            },
-            VAutocomplete: { 
-                variant:'underlined',
-                density:'compact' 
-            },
-            VSelect: { 
-                variant:'underlined',
-                density:'compact' 
-            },
-            VBtn:{
-                color:'primary',
-            }
+        VDialog: {
+            transition:"fab-transition"
         },
         VSheet:{
-            VTextField: { 
-                variant:'outlined',
-                density:'compact'
-                
-            },
         },
         VPagination:{
             color:"primary",
@@ -102,7 +77,16 @@ const vuetify = createVuetify({
             location:"top"
         },
         VIcon:{
-        }
+        },
+        VTextField:{
+            density:'compact',
+            variant:"outlined"
+        },
+        VAutocomplete:{
+            density:'compact',
+            variant:"outlined",
+            transition:"slide-x-transition"
+        },
 
     }
 })

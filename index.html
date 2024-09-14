@@ -8,12 +8,11 @@
   </head>
   <body>
     <div id="app">
-      <div id="componentContainer"></div>
     </div>
     <script type="module" src="/src/main.js"></script>
     <script>
       const shopState = localStorage.getItem('shopState');
-      const componentContainer = document.getElementById('componentContainer');
+      const componentContainer = document.getElementById('app');
       if (shopState === 'true') {
         componentContainer.innerHTML = '<Landing-Page></Landing-Page>';
       } else {
@@ -21,4 +20,6 @@
       }
     </script>
   </body>
+  <style>
+  </style>
 </html>
