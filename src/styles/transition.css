@@ -10,7 +10,7 @@
   
   .slide-down-enter-from,
   .slide-down-leave-to {
-    transform: translateY(-100%);
+    transform: translateY(-40px)!important;
     opacity: 0;
   }
   
@@ -26,6 +26,12 @@
   
   .slide-up-enter-from,
   .slide-up-leave-to {
-    transform: translateY(40px);
+    transform: translateY(40px)!important;
     opacity: 0;
+  }
+
+
+  /* !------------------------------- */
+  .transitonImportant{
+    transition: all 1s cubic-bezier( 0.59, 0.28, 0.06, 0.48 )!important;
   }

@@ -117,11 +117,11 @@
                         <v-btn @click="addImageUrl" color="primary">Add Image URL</v-btn>
                         <div v-if="imageUrls.length">
                             <h5>Image URLs:</h5>
-                            <ul>
-                                <li v-for="(url, index) in imageUrls" :key="index">
-                                <img :src="url" alt="Image Preview" style="max-width: 20%; height: auto;"/>
-                                </li>
-                            </ul>
+                            <v-row class="">
+                                <v-col v-for="(url, index) in imageUrls" :key="index">
+                                    <img :src="url" alt="Image Preview" style="max-width: 20%; height: auto;"/>
+                                </v-col>
+                            </v-row>
                         </div>
                         <div v-if="newImageUrl">
                             <img :src="newImageUrl" alt="Image Preview" style="max-width: 20%; height: 20%;"/>
@@ -148,12 +148,12 @@
                         <v-text-field v-model="newImageUrl" label="Image URL" type="url"></v-text-field>
                         <div v-if="imageUrls.length">
                             <h5>Image URLs:</h5>
-                            <ul>
-                                <li v-for="(url, index) in imageUrls" :key="index">
-                                    <img :src="url" alt="Image Preview" style="max-width: 20%; height: 20%;"/>
-                                    <v-btn @click="deleteImage(index)" icon="mdi-delete" size="x-small" density="comfortable" color="error" tile rounded></v-btn>
-                                </li>
-                            </ul>
+                            <v-row>
+                                <v-col class="position-relative overflow-hidden " v-for="(url, index) in imageUrls" :key="index">
+                                    <v-btn v-tooltip="`delete`" class="image-button-delete" @click="deleteImage(index)" icon="mdi-delete" size="x-small" density="comfortable" color="error" tile rounded></v-btn>
+                                    <img class="rounded w-100" :src="url" alt="Image Preview"/>
+                                </v-col>
+                            </v-row>
                         </div>
                         <div v-if="newImageUrl">
                             <img :src="newImageUrl" alt="Image Preview" style="max-width: 20%; height: 20%;"/>

@@ -74,7 +74,8 @@ const vuetify = createVuetify({
         },
         VTooltip:{
             activator:"parent",
-            location:"top"
+            location:"top",
+            transition:"fab-transition"
         },
         VIcon:{
         },
