@@ -6,10 +6,9 @@
         v-show="appbar" 
         color="primary" 
         density="comfortable" 
-        scroll-behavior="elevate"
       >
         <v-app-bar-nav-icon @click="drawer = !drawer" tile></v-app-bar-nav-icon>
-        <v-app-bar-title>Application Bar</v-app-bar-title>
+        <v-app-bar-title>E-commerce</v-app-bar-title>
         <v-switch
           color="primary"
           v-model="darkMode"
@@ -22,17 +21,19 @@
       </v-app-bar>
     </v-expand-transition>
     
-    <v-navigation-drawer v-model="drawer" class="transitonImportant">
-      <v-list-item title="My Application" subtitle="Vuetify"></v-list-item>
-      <v-divider></v-divider>
+    <v-navigation-drawer color="primary" v-model="drawer" class="transitonImportant">
+      <v-list-item>
+        <v-list-item-title class="headline">
+          <img src="/images/user.png" alt="Profile Icon" class="mr-2" style="width: 24px; height: 24px;">
+          Norwel Nunez
+        </v-list-item-title>
+      </v-list-item>
       <div class="pa-2">
-        <v-text-field>
-        </v-text-field>
       </div>
     </v-navigation-drawer>
 
     <transition name="slide-up" mode="out-in">
-      <v-main v-if="main" style="min-height:100vh!important;" class="transitonImportant">
+      <v-main v-if="main" style="min-height:100vh!important;" class="transitonImportant bg-secondary">
         <Product />
       </v-main>
     </transition>
@@ -44,8 +45,10 @@
 import Product from '@/views/Product.vue'
 import {ref, onMounted, onBeforeUnmount} from 'vue'
 import { useTheme } from "vuetify";
-
-
+import { mainStore } from './stores/mainStore.js'
+import { storeToRefs } from 'pinia'
+const store = mainStore()
+const { DarkMode, shopState } = storeToRefs(store)
 const drawer = ref(false)
 const appbar =ref(false)
 const main = ref(false)
@@ -57,6 +60,7 @@ let inactivityTimeout = null;
 const toggleTheme = () => {
     theme.global.name.value = darkMode.value ? "customDarkTheme" : "customLightTheme";
     localStorage.setItem('theme', darkMode.value ? 'dark' : 'light');
+    DarkMode.value = DarkMode.value ? 'dark' : 'light'
 };
 
 
@@ -65,12 +69,12 @@ function closeShop(){
   setTimeout(() => {
     main.value = false
     setTimeout(() => {
-      drawer.value = false
+      appbar.value = false  
       setTimeout(() => {
-        appbar.value = false  
+        drawer.value = false
         setTimeout(() => {
           location.reload()
-        }, 1000);
+        }, 700);
       }, 100);
     }, 100);
 
@@ -116,13 +120,12 @@ onMounted(() => {
       setTimeout(() => {
         appbar.value = true
         setTimeout(() => {
-          drawer.value = true
-          setTimeout(() => {
             main.value = true  
+          }, 300);
+          setTimeout(() => {
+            drawer.value = true
           }, 100);
-        }, 100);
-
-      }, 300);
+      }, 400);
     }
 
     setupInactivityListeners();

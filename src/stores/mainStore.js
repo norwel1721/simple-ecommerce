@@ -5,15 +5,36 @@ export const mainStore = defineStore('mainStore', {
     state: () => ({
         products: [],
         categories:[],
+        DarkMode:false,
+        shopState:false,
+
+        rules:{
+            title: [
+                v => !!v || 'Title is required',
+            ],
+            price: [
+                v => !!v || 'Price is required',
+                v => (v > 0) || 'Price must be greater than 0',
+            ],
+            description: [
+                v => !!v || 'Description is required',
+            ],
+            category: [
+                v => !!v || 'Category is required',
+            ],
+        }
     }),
     actions: {
         async getProducts() {
+            this.products = []
             await axios({
                 method: 'GET',
                 url: 'https://api.escuelajs.co/api/v1/products',
                 }).then((res)=>{
-
-                    this.products = res.data
+                    for (let index = 0; index < res.data.length; index++) {
+                        const element = res.data[index];
+                        this.products.unshift(element)
+                    }
                 }).catch((err) =>{
                     console.log(err)
             })
@@ -36,7 +57,7 @@ export const mainStore = defineStore('mainStore', {
               url: 'https://api.escuelajs.co/api/v1/products',
               data: data
             }).then((res)=>{
-                this.products.push(res.data)
+                this.products.unshift(res.data)
             }).catch((err) => {
                 console.log(err);
             });
@@ -57,6 +78,27 @@ export const mainStore = defineStore('mainStore', {
             }).catch((err) => {
                 console.log(err);
             });
-        }
+        },
+
+        async deleteProduct(productId) {
+            await axios({
+                method: 'DELETE',
+                url: `https://api.escuelajs.co/api/v1/products/${String(productId)}`,
+            }).then(() => {
+                this.products = this.products.filter(product => product.id !== parseInt(productId));
+            }).catch((err) => {
+                console.log(err);
+            });
+        },
     },
+    persist: [
+        {
+            storage: localStorage,
+            paths: [
+                'DarkMode',         
+                'shopState'
+            ],
+            key: 'eCommerce',
+        },
+    ]
 });

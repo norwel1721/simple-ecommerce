@@ -11,6 +11,12 @@
     </div>
     <script type="module" src="/src/main.js"></script>
     <script>
+      if (localStorage.getItem('shopState') == null) {
+        localStorage.setItem('shopState', true);
+      }
+      if (localStorage.getItem('theme') == null) {
+        localStorage.setItem('theme', 'light');
+      }
       const shopState = localStorage.getItem('shopState');
       const componentContainer = document.getElementById('app');
       if (shopState === 'true') {

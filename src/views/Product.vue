@@ -70,6 +70,7 @@
         </v-row>
         <TransitionGroup name="slide-up" tag="div" class="d-flex flex-wrap mr-n3 ml-n3">
             <v-col 
+            class="position-relative hovering-card"
                 v-show="productDelay[index]"
                 v-for="(product, index) in paginatedData" 
                 :key="index" 
@@ -79,20 +80,20 @@
                 lg="3" 
                 xl="2" 
                 xxl="1">
-                <div class="text-secondary custom-card-design bg-secondary">
+                <div class="actions-button">
+                    <v-btn @click="editProduct(product)" class=" mr-1 mt-1" icon="mdi-pencil" size="x-small" density="comfortable" color="success" tile rounded></v-btn>
+                    <v-btn @click="deleteProducts(product.id)" class=" mr-1 mt-1" icon="mdi-delete" size="x-small" density="comfortable" color="error" tile rounded></v-btn>
+                </div>
+                <div @click="openImageModal(product.images, 0)" class="custom-card-design bg-secondary  ">
                     <div class="card-image">
                         <img 
                             :src="getImageSrc(product.images)"
                             :height="200"
                             cover>
-                        </img>
-                        <div class="actions-button">
-                            <v-btn @click="editProduct(product)" class=" mr-1 mt-1" icon="mdi-pencil" size="x-small" density="comfortable" color="success" tile rounded></v-btn>
-                            <v-btn class=" mr-1 mt-1" icon="mdi-delete" size="x-small" density="comfortable" color="error" tile rounded></v-btn>
-                        </div>
+                        / >
                     </div>
                     <div class="card-details">
-                        <div>
+                        <div class="text-white">
                             <p>{{ product.title }}</p>
                             <p>₱ {{ product.price }}</p>
                         </div>
@@ -100,6 +101,29 @@
                 </div>
             </v-col>
         </TransitionGroup>
+
+        <v-dialog v-model="imageDialog" max-width="800" persistent>
+            <v-card>
+                <v-card-title class="d-flex align-center justify-space-between pa-2 bg-primary">
+                    <span class="headline">Image Gallery</span>
+                    <v-btn @click="imageDialog = false" icon="mdi-close" color="error" density="compact" tile></v-btn>
+                </v-card-title>
+                <v-card-text>
+                    <v-carousel v-model="currentImageIndex" hide-delimiters>
+                        <v-carousel-item v-for="(image, index) in imagesToShow" :key="index">
+                            <div style="text-align: center;">
+                                <img :src="image" alt="Image Preview" style="width: 50%; height: auto;" />
+                            </div>
+                        </v-carousel-item>
+                    </v-carousel>
+                    <v-row class="thumbnails">
+                        <v-col v-for="(image, index) in imagesToShow" :key="index" cols="2" sm="1" md="1" lg="1">
+                            <v-img :src="image" alt="Thumbnail" @click="currentImageIndex = index" />
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
 
       <v-dialog v-model="addDialog" max-width="400" persistent>
             <v-form @submit.prevent="createProduct">
@@ -109,10 +133,30 @@
                     <v-btn @click="addDialog = false" icon="mdi-close" variant="tonal" color="error" density="compact" tile rounded></v-btn>
                     </v-card-title>
                     <v-card-text class="pa-2">
-                        <v-text-field v-model="productData.title" label="Title"></v-text-field>
-                        <v-text-field v-model="productData.price" label="Price" type="number"></v-text-field>
-                        <v-text-field v-model="productData.description" label="Description"></v-text-field>
-                        <v-autocomplete v-model="productData.categoryId" :items="categories" item-title="name" item-value="id" label="Category"></v-autocomplete>
+                        <v-text-field 
+                            v-model="productData.title" 
+                            label="Title"
+                            :rules="rules.title"
+                        ></v-text-field>
+                        <v-text-field 
+                            v-model="productData.price" 
+                            label="Price" 
+                            type="number"
+                            :rules="rules.price"
+                        ></v-text-field>
+                        <v-text-field 
+                            v-model="productData.description" 
+                            label="Description"
+                            :rules="rules.description"
+                        ></v-text-field>
+                        <v-autocomplete 
+                            v-model="productData.categoryId" 
+                            :items="categories" 
+                            item-title="name" 
+                            item-value="id" 
+                            label="Category"
+                            :rules="rules.category"
+                        ></v-autocomplete>
                         <v-text-field v-model="newImageUrl" label="Image URL" type="url"></v-text-field>
                         <v-btn @click="addImageUrl" color="primary">Add Image URL</v-btn>
                         <div v-if="imageUrls.length">
@@ -133,7 +177,7 @@
       </v-dialog>
 
 
-      <v-dialog v-model="updateDialog" max-width="400" persistent>
+      <v-dialog v-model="updateDialog" max-width="800" persistent>
             <v-form @submit.prevent="updateProduct">
                 <v-card>
                     <v-card-title class="pa-2 bg-primary d-flex justify-space-between align-center">
@@ -141,36 +185,47 @@
                     <v-btn @click="updateDialog = false" icon="mdi-close" variant="tonal" color="error" density="compact" tile rounded></v-btn>
                     </v-card-title>
                     <v-card-text class="pa-2">
-                        <v-text-field v-model="productData.title" label="Title"></v-text-field>
-                        <v-text-field v-model="productData.price" label="Price" type="number"></v-text-field>
-                        <v-text-field v-model="productData.description" label="Description"></v-text-field>
-                        <v-autocomplete v-model="productData.categoryId" :items="categories" item-title="name" item-value="id" label="Category"></v-autocomplete>
-                        <v-text-field v-model="newImageUrl" label="Image URL" type="url"></v-text-field>
-                        <div v-if="imageUrls.length">
-                            <h5>Image URLs:</h5>
-                            <v-row>
-                                <v-col class="position-relative overflow-hidden " v-for="(url, index) in imageUrls" :key="index">
-                                    <v-btn v-tooltip="`delete`" class="image-button-delete" @click="deleteImage(index)" icon="mdi-delete" size="x-small" density="comfortable" color="error" tile rounded></v-btn>
-                                    <img class="rounded w-100" :src="url" alt="Image Preview"/>
-                                </v-col>
-                            </v-row>
-                        </div>
-                        <div v-if="newImageUrl">
-                            <img :src="newImageUrl" alt="Image Preview" style="max-width: 20%; height: 20%;"/>
-                        </div>
+                    <v-row>
+                        <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+                            <v-text-field v-model="productData.title" label="Title"></v-text-field>
+                            <v-text-field v-model="productData.price" label="Price" type="number"></v-text-field>
+                            <v-text-field v-model="productData.description" label="Description"></v-text-field>
+                            <v-autocomplete v-model="productData.categoryId" :items="categories" item-title="name" item-value="id" label="Category"></v-autocomplete>
+                            <v-text-field v-model="newImageUrl" label="Image URL" type="url"></v-text-field>
+                        </v-col>
+                        <v-col cols="12" xs="12" sm="16" md="6" lg="6" xl="6">
+                            <div v-if="imageUrls.length">
+                                <h5>Image/s:</h5>
+                                <v-row>
+                                    <v-col class="position-relative overflow-hidden " v-for="(url, index) in imageUrls" :key="index">
+                                        <v-btn v-tooltip="`delete`" class="image-button-delete" @click="deleteImage(index)" icon="mdi-delete" size="x-small" density="comfortable" color="error" tile rounded></v-btn>
+                                        <img class="rounded w-100" :src="url" alt="Image Preview"/>
+                                    </v-col>
+                                </v-row>
+                            </div>
+                            <div v-if="newImageUrl">
+                                <img :src="newImageUrl" alt="Image Preview" style="max-width: 20%; height: 20%;"/>
+                            </div>
+                        </v-col>
+                    </v-row>
                     </v-card-text>
                     <v-card-actions><v-btn type="submit">Save</v-btn></v-card-actions>
                 </v-card>
             </v-form>
       </v-dialog>
+      <Snackbar ref="snackbar" :message="snackbar.message" :type="snackbar.type" />
   </v-container>
 </template>
 
 <script>
 import { mainStore } from '@/stores/mainStore';
 import { mapState, mapActions } from "pinia";
+import Snackbar from '../components/SnackBar.vue';
 
 export default {
+    components: {
+        Snackbar
+    },
   data() {
         return {
             itemsPerPage: 12,
@@ -191,6 +246,15 @@ export default {
             productDelay:[],
             addDialog:false,
             updateDialog: false,
+            imageDialog: false,
+            imagesToShow: [],
+            currentImageIndex: 0,
+            originalImages: [],
+
+            snackbar:{
+                message: '',
+                type: 'success'
+            }
         };
     },
 
@@ -198,6 +262,7 @@ export default {
         ...mapState(mainStore, [
             'products',
             'categories',
+            'rules',
         ]),
 
         filteredProducts() {
@@ -234,8 +299,29 @@ export default {
             'getProducts',
             'getCategories',
             'createProducts',
-            'updateProducts'
+            'updateProducts',
+            'deleteProduct'
         ]),
+
+        deleteProducts(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                this.deleteProduct(productId).then(() => {
+                    this.showSnackbar('Product deleted successfully!', 'error');
+                    this.loadProducts();
+                }).catch((err) => {
+                    console.error('Failed to delete product:', err);
+                });
+            }
+        },
+
+        openImageModal(images, index) {
+            const parsedImages = images.map(image => {
+                return image.replace(/[\["\]]/g, '');
+            });
+            this.imagesToShow = parsedImages;
+            this.currentImageIndex = index;
+            this.imageDialog = true;
+        },
 
         updateProduct(){
             if (this.newImageUrl) {
@@ -257,9 +343,11 @@ export default {
 
             this.productData.images = [...filteredExistingImages, ...this.imageUrls];
 
+            this.productData.images = [...this.imageUrls];
             this.productData.images = [...new Set(this.productData.images)];
 
             this.updateProducts(this.productData).then(() => {
+                this.showSnackbar('Product updated successfully!', 'success');
                 this.loadProducts();
                 this.updateDialog = false;
                 this.resetProductData();
@@ -268,7 +356,7 @@ export default {
 
         deleteImage(index) {
             this.imageUrls.splice(index, 1);
-            this.productData.images.splice(index, 1);
+            // this.productData.images.splice(index, 1);
         },
 
         editProduct(data){
@@ -283,6 +371,8 @@ export default {
             this.newImageUrl = '';
             // this.imageUrls = [];
             this.imageUrls = data.images.map(image => image.replace(/["\[\]]/g, ''));
+            this.originalImages = data.images.map(image => image.replace(/["\[\]]/g, ''));
+            this.imageUrls = [...this.originalImages];
             this.updateDialog = true
         },
 
@@ -296,23 +386,28 @@ export default {
         },
 
         createProduct(){
-            if (this.newImageUrl) {
-                this.imageUrls.push(this.newImageUrl);
-                this.newImageUrl = '';
-            }
+            this.$refs.form.validate();
+            if (this.$refs.form.validate()) {
+                if (this.newImageUrl) {
+                    this.imageUrls.push(this.newImageUrl);
+                    this.newImageUrl = '';
+                }
 
-            if (this.imageUrls.length) {
-                this.productData.images = [...this.productData.images, ...this.imageUrls];
-                this.imageUrls = [];
-            } else {
-                alert("Please enter at least one valid image URL.");
-            }
+                if (this.imageUrls.length) {
+                    this.productData.images = [...this.productData.images, ...this.imageUrls];
+                    this.imageUrls = [];
+                } else {
+                    alert("Please enter at least one valid image URL.");
+                }
 
-            this.createProducts(this.productData).then(()=>{
-                this.loadProducts()
-            })
-            this.addDialog = false
-            this.resetProductData();
+                this.createProducts(this.productData).then(()=>{
+                    this.showSnackbar('Product created successfully!', 'success');
+                    this.loadProducts()
+                })
+                this.addDialog = false
+                this.resetProductData();
+            }
+            
         },
 
         resetProductData() {
@@ -361,7 +456,13 @@ export default {
                 delay += 100
             }
 
-        }
+        },
+
+        showSnackbar(message, type) {
+            this.snackbar.message = message;
+            this.snackbar.type = type;
+            this.$refs.snackbar.show();
+        },
     },
 
     async mounted() {
@@ -373,6 +474,14 @@ export default {
     watch:{
         filteredProducts() {
         this.currentPage = 1;
+        },
+
+        updateDialog: {
+            handler(val) {
+            if (!val) {
+                this.imageUrls = [...this.originalImages];
+            }
+            },
         },
     }
 };

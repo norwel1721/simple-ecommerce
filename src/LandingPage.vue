@@ -1,7 +1,7 @@
 <template>
     <v-app>
-        <v-container fluid class="d-flex align-center overflow-hidden justify-center  position-relative h-screen  w-100">
-            <transition name="slide-up" mode="out-in">
+        <v-container fluid class="bg-secondary d-flex align-center overflow-hidden justify-center  position-relative h-screen  w-100">
+            <transition name="slide-down" mode="out-in">
                 <v-btn 
                     v-show="button"
                     @click="openShop()" 
@@ -13,12 +13,12 @@
             </transition>
             <transition name="shoe" mode="out-in">
                 <div v-show="shoe" class="shoes-container" >
-                    <img class="shoes" src="../images/shoes.png"></img>
+                    <img class="shoes" src="../images/shoes.png" />
                 </div>
             </transition>
             <transition name="arm" mode="out-in">
                 <div v-show="arm" class="arm-container" >
-                    <img class="arm" src="../images/armBag.png"></img>
+                    <img class="arm" src="../images/armBag.png" />
                 </div>
             </transition>
             <div :class="'elevation-20 bg-primary left ease '  + (!open?  'remove-width' : '' )"></div>
@@ -135,7 +135,7 @@
         width: 100%;
     }
     .shoe-enter-active {
-    transition: all 0.6s cubic-bezier( 0.59, 0.28, 0.06, 0.48 );
+    transition: all 0.9s ease-in-out;
     }
     
     .shoe-leave-active {
@@ -174,7 +174,7 @@
         width: 100%;
     }
     .arm-enter-active {
-    transition: all 0.6s cubic-bezier( 0.59, 0.28, 0.06, 0.48 );
+    transition: all 0.9s ease-in-out;
     }
     
     .arm-leave-active {

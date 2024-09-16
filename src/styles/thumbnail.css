@@ -1,0 +1,16 @@
+.thumbnails {
+    margin-top: 20px;
+  }
+  
+  .thumbnails .v-col {
+    padding: 5px;
+  }
+  
+  .thumbnails .v-img {
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    height: 50px;
+    object-fit: cover;
+  }

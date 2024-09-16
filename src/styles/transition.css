@@ -33,5 +33,6 @@
 
   /* !------------------------------- */
   .transitonImportant{
-    transition: all 1s cubic-bezier( 0.59, 0.28, 0.06, 0.48 )!important;
+    transition: all 0.6s cubic-bezier( 0.59, 0.28, 0.06, 0.48 )!important;
+    
   }
