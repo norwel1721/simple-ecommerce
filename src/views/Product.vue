@@ -1,5 +1,6 @@
 <template>
   <v-container>
+        <!-- NOTE START OF FILTER FIELD -->
         <v-row class="align-center justify-center">
             <v-col 
                 cols="12"
@@ -10,7 +11,7 @@
                 xs="6"
             >
                 <v-btn 
-                    @click="addDialog = true" 
+                    @click="openAddDialog" 
                     text="Add product"
                     color="primary" 
                     block
@@ -68,6 +69,9 @@
                 ></v-pagination>
             </v-col>
         </v-row>
+        <!-- NOTE END OF FILTER FIELD  -->
+
+        <!-- NOTE START OF MAIN DISPLAY DATA -->
         <TransitionGroup name="slide-up" tag="div" class="d-flex flex-wrap mr-n3 ml-n3">
             <v-col 
             class="position-relative hovering-card"
@@ -100,8 +104,13 @@
                     </div>
                 </div>
             </v-col>
+            <div v-if="filteredProducts.length === 0">
+                <p>No products found.</p>
+            </div>
         </TransitionGroup>
+        <!-- NOTE END OF MAIN DISPLAY DATA -->
 
+        <!-- NOTE START PREVIEW IMAGE DIALOG  -->
         <v-dialog v-model="imageDialog" max-width="800" persistent>
             <v-card>
                 <v-card-title class="d-flex align-center justify-space-between pa-2 bg-primary">
@@ -124,9 +133,11 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
+        <!-- NOTE END OF PREVIEW IMAGE DIALOG  -->
 
-      <v-dialog v-model="addDialog" max-width="400" persistent>
-            <v-form @submit.prevent="createProduct">
+        <!-- NOTE START ADD PRODUCT DIALOG  -->
+        <v-dialog v-model="addDialog" max-width="400" persistent>
+            <v-form @submit.prevent="createProduct" ref="form">
                 <v-card>
                     <v-card-title class="pa-2 bg-primary d-flex justify-space-between align-center">
                     <p>Add Product</p>
@@ -136,18 +147,18 @@
                         <v-text-field 
                             v-model="productData.title" 
                             label="Title"
-                            :rules="rules.title"
+                            :rules="[ v => !!v || 'Name is required']"
                         ></v-text-field>
                         <v-text-field 
                             v-model="productData.price" 
                             label="Price" 
                             type="number"
-                            :rules="rules.price"
+                            :rules="[ v => !!v || 'Price is required']"
                         ></v-text-field>
                         <v-text-field 
                             v-model="productData.description" 
                             label="Description"
-                            :rules="rules.description"
+                            :rules="[ v => !!v || 'Description is required']"
                         ></v-text-field>
                         <v-autocomplete 
                             v-model="productData.categoryId" 
@@ -155,7 +166,7 @@
                             item-title="name" 
                             item-value="id" 
                             label="Category"
-                            :rules="rules.category"
+                            :rules="[ v => !!v || 'Category is required']"
                         ></v-autocomplete>
                         <v-text-field v-model="newImageUrl" label="Image URL" type="url"></v-text-field>
                         <v-btn @click="addImageUrl" color="primary">Add Image URL</v-btn>
@@ -173,11 +184,12 @@
                     </v-card-text>
                     <v-card-actions><v-btn type="submit">Save</v-btn></v-card-actions>
                 </v-card>
-        </v-form>
-      </v-dialog>
+            </v-form>
+        </v-dialog>
+        <!-- NOTE END ADD PRODUCT DIALOG -->
 
-
-      <v-dialog v-model="updateDialog" max-width="800" persistent>
+        <!-- NOTE START UPDATE PRODUCT DIALOG -->
+        <v-dialog v-model="updateDialog" max-width="800" persistent>
             <v-form @submit.prevent="updateProduct">
                 <v-card>
                     <v-card-title class="pa-2 bg-primary d-flex justify-space-between align-center">
@@ -212,8 +224,10 @@
                     <v-card-actions><v-btn type="submit">Save</v-btn></v-card-actions>
                 </v-card>
             </v-form>
-      </v-dialog>
-      <Snackbar ref="snackbar" :message="snackbar.message" :type="snackbar.type" />
+        </v-dialog>
+        <!-- NOTE END UPDATE PRODUCT DIALOG -->
+
+        <Snackbar ref="snackbar" :message="snackbar.message" :type="snackbar.type" />
   </v-container>
 </template>
 
@@ -226,7 +240,9 @@ export default {
     components: {
         Snackbar
     },
-  data() {
+
+    // NOTE start of data
+    data() {
         return {
             itemsPerPage: 12,
             currentPage: 1,
@@ -257,7 +273,9 @@ export default {
             }
         };
     },
+    // NOTE end of data
 
+    // NOTE start of computed
     computed: {
         ...mapState(mainStore, [
             'products',
@@ -265,6 +283,7 @@ export default {
             'rules',
         ]),
 
+        //NOTE start of filter function
         filteredProducts() {
             let products = this.products;
 
@@ -283,7 +302,9 @@ export default {
 
             return products;
         },
+        //NOTE end of filter function
 
+        //NOTE start of paginated data function
         paginatedData() {
             const startIndex = (this.currentPage - 1) * this.itemsPerPage;
             return this.filteredProducts.slice(startIndex, startIndex + this.itemsPerPage);
@@ -292,8 +313,11 @@ export default {
         totalPages() {
             return Math.ceil(this.filteredProducts.length / this.itemsPerPage);
         },
+        //NOTE end of paginated data function
     },
+    // NOTE End of computed
 
+    // NOTE start of methods
     methods: {
         ...mapActions(mainStore, [
             'getProducts',
@@ -303,6 +327,7 @@ export default {
             'deleteProduct'
         ]),
 
+        // NOTE start of delete product function
         deleteProducts(productId) {
             if (confirm('Are you sure you want to delete this product?')) {
                 this.deleteProduct(productId).then(() => {
@@ -313,7 +338,9 @@ export default {
                 });
             }
         },
+        // NOTE end of delete product function
 
+        // NOTE start of Priview of image function
         openImageModal(images, index) {
             const parsedImages = images.map(image => {
                 return image.replace(/[\["\]]/g, '');
@@ -322,7 +349,9 @@ export default {
             this.currentImageIndex = index;
             this.imageDialog = true;
         },
+        // NOTE end of Priview of image function
 
+        // NOTE start of update product function
         updateProduct(){
             if (this.newImageUrl) {
                 this.imageUrls.push(this.newImageUrl);
@@ -353,12 +382,16 @@ export default {
                 this.resetProductData();
             });
         },
+        // NOTE end of update product function
 
+        // NOTE start delete preview images function
         deleteImage(index) {
             this.imageUrls.splice(index, 1);
             // this.productData.images.splice(index, 1);
         },
+        // NOTE end delete preview images function
 
+        // NOTE start edit function
         editProduct(data){
             this.productData = {
                 id: data.id,
@@ -375,7 +408,9 @@ export default {
             this.imageUrls = [...this.originalImages];
             this.updateDialog = true
         },
+        // NOTE end edit function
 
+        // NOTE start add multiple image using url
         addImageUrl() {
             if (this.newImageUrl) {
                 this.imageUrls.push(this.newImageUrl);
@@ -384,8 +419,15 @@ export default {
                 alert("Please enter a valid image URL.");
             }
         },
+        // NOTE end add multiple image using url
 
-        createProduct(){
+        // NOTE start create product
+        openAddDialog() {
+            this.resetProductData();
+            this.addDialog = true;
+        },
+        
+        async createProduct() {
             this.$refs.form.validate();
             if (this.$refs.form.validate()) {
                 if (this.newImageUrl) {
@@ -393,23 +435,25 @@ export default {
                     this.newImageUrl = '';
                 }
 
-                if (this.imageUrls.length) {
+                if (this.imageUrls.length > 0) {
                     this.productData.images = [...this.productData.images, ...this.imageUrls];
                     this.imageUrls = [];
                 } else {
-                    alert("Please enter at least one valid image URL.");
+                    this.showSnackbar('Please enter at least one valid image URL.', 'warning');
+                    return;
                 }
 
-                this.createProducts(this.productData).then(()=>{
+                this.addDialog = false;
+                await this.createProducts(this.productData).then(() => {
                     this.showSnackbar('Product created successfully!', 'success');
-                    this.loadProducts()
+                    this.loadProducts();
+                    this.resetProductData();
                 })
-                this.addDialog = false
-                this.resetProductData();
             }
-            
         },
+        // NOTE start create product
 
+        // NOTE start reset fields function
         resetProductData() {
             this.productData = {
                 title: '',
@@ -418,9 +462,12 @@ export default {
                 categoryId: null,
                 images: [],
             };
+            this.imageUrls = [];
             this.newImageUrl = '';
         },
+        // NOTE end reset fields function
 
+        // NOTE start conversion of jason string url
         getImageSrc(image) {
             if (this.isJsonString(image)) {
                 const imageData = JSON.parse(image);
@@ -438,12 +485,9 @@ export default {
                 return false;
             }
         },
+        // NOTE end conversion of jason string url
 
-
-        changePage() {
-            this.loadProducts()
-        },
-        
+        // NOTE start dispatch of data
         loadProducts(){
             for (let i = 0; i < this.productDelay.length; i++) {
                 this.productDelay[i] = false
@@ -457,20 +501,31 @@ export default {
             }
 
         },
+        // NOTE end dispatch of data
 
+        // NOTE Start of snackbar message
         showSnackbar(message, type) {
             this.snackbar.message = message;
             this.snackbar.type = type;
             this.$refs.snackbar.show();
         },
-    },
+        // NOTE end of snackbar message
 
+        changePage() {
+            this.loadProducts()
+        },
+    },
+    // NOTE end of methods
+
+    // NOTE start of mounted
     async mounted() {
         await this.getProducts();
         this.loadProducts()
         await this.getCategories();
     },
+    // NOTE end of mounted
 
+    // NOTE start of watch
     watch:{
         filteredProducts() {
         this.currentPage = 1;
@@ -484,5 +539,6 @@ export default {
             },
         },
     }
+    // NOTE end of watch
 };
 </script>

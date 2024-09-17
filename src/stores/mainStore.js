@@ -7,22 +7,6 @@ export const mainStore = defineStore('mainStore', {
         categories:[],
         DarkMode:false,
         shopState:false,
-
-        rules:{
-            title: [
-                v => !!v || 'Title is required',
-            ],
-            price: [
-                v => !!v || 'Price is required',
-                v => (v > 0) || 'Price must be greater than 0',
-            ],
-            description: [
-                v => !!v || 'Description is required',
-            ],
-            category: [
-                v => !!v || 'Category is required',
-            ],
-        }
     }),
     actions: {
         async getProducts() {

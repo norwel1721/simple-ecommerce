@@ -17,7 +17,7 @@
           @change="toggleTheme()"
           :label="` ${darkMode ? 'Dark Mode' : 'Light Mode'}!`">
         </v-switch>
-        <v-btn @click="closeShop()">back</v-btn>
+        <v-btn @click="closeShop()" prepend-icon="mdi-arrow-left-circle">back</v-btn>
       </v-app-bar>
     </v-expand-transition>
     

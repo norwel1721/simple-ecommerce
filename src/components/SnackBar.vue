@@ -56,5 +56,8 @@
   .error {
     background-color: red;
   }
+  .warning {
+    background-color: orange;
+  }
   </style>
   
